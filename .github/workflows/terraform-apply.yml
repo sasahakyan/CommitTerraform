@@ -1,0 +1,42 @@
+---
+# Apply.
+#
+# - Merge to main applies dev automatically: the plan was reviewed on the PR
+#   and dev is the environment that is allowed to move without a second gate.
+# - stg and prd are applied only through a manual dispatch that names the
+#   environment. Their GitHub Environments require a reviewer, so the job
+#   pauses until someone approves the deployment. Same code, same tfvars
+#   layout, different gate.
+name: terraform-apply
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to apply
+        type: choice
+        required: true
+        options: [dev, stg, prd]
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:
+  apply:
+    name: apply
+    uses: sasahakyan/commitTemplates/.github/workflows/reusable-terraform.yml@v0.1.1
+    with:
+      environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+      action: apply
+      comment-on-pr: false
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write

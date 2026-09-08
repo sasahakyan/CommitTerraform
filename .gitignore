@@ -1,0 +1,10 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+tfplan
+*.tfplan
+plan.txt
+backend_override.tf
+.DS_Store

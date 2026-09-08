@@ -1,0 +1,13 @@
+---
+name: yamllint
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    uses: sasahakyan/commitTemplates/.github/workflows/reusable-yamllint.yml@v0.1.1

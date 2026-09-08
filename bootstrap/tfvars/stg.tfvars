@@ -1,0 +1,7 @@
+environment             = "stg"
+org_id                  = "117329375502"
+billing_account         = "019BF4-6E23C4-B82EB4"
+quota_project           = "prooflean"
+region                  = "europe-west1"
+github_owner            = "sasahakyan"
+project_deletion_policy = "PREVENT"

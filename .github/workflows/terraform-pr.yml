@@ -1,0 +1,50 @@
+---
+# Pull request gate: fmt, validate, tflint and plan for every active
+# environment. The plan is posted as a PR comment so reviewers approve a
+# concrete change set, not a diff of HCL. Nothing is applied here.
+#
+# ACTIVE_ENVS is a repository variable holding a JSON list of environments
+# that have been bootstrapped, e.g. ["dev"]. Adding stg is: run the bootstrap,
+# commit its outputs, add "stg" to the list.
+name: terraform-pr
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:
+  bootstrap-static:
+    name: bootstrap fmt + validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13.5"
+          terraform_wrapper: false
+      - run: terraform -chdir=bootstrap fmt -check -recursive -diff
+      - run: terraform -chdir=bootstrap init -backend=false -input=false
+      - run: terraform -chdir=bootstrap validate -no-color
+
+  plan:
+    name: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(vars.ACTIVE_ENVS || '["dev"]') }}
+    uses: sasahakyan/commitTemplates/.github/workflows/reusable-terraform.yml@v0.1.1
+    with:
+      environment: ${{ matrix.environment }}
+      action: plan
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
