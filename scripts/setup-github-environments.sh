@@ -23,8 +23,9 @@ REVIEWER_ID="$(gh api users/"$OWNER" --jq .id)"
 ensure_env() {
   local repo="$1" env="$2"
   if [ "$env" = "dev" ]; then
-    gh api -X PUT "repos/${repo}/environments/${env}" --input - <<<'{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' >/dev/null
-    gh api -X POST "repos/${repo}/environments/${env}/deployment-branch-policies" -f name=main -f type=branch >/dev/null 2>&1 || true
+    # dev has no branch restriction: pull request branches must be able to
+    # run terraform plan with the dev identity. stg/prd are main-only.
+    gh api -X PUT "repos/${repo}/environments/${env}" --input - <<<'{"deployment_branch_policy":null}' >/dev/null
   else
     gh api -X PUT "repos/${repo}/environments/${env}" --input - <<EOF_JSON >/dev/null
 {"reviewers":[{"type":"User","id":${REVIEWER_ID}}],"prevent_self_review":false,
