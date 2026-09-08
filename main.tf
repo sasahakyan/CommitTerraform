@@ -18,7 +18,7 @@ locals {
 
 # ---------------------------------------------------------------- network
 module "network" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/network?ref=v0.1.1"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/network?ref=v0.1.2"
 
   project_id  = var.project_id
   name        = "${local.prefix}-vpc"
@@ -28,7 +28,7 @@ module "network" {
 
 # ---------------------------------------------------------------- images
 module "artifact_registry" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/artifact-registry?ref=v0.1.1"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/artifact-registry?ref=v0.1.2"
 
   project_id    = var.project_id
   location      = var.region
@@ -60,7 +60,7 @@ resource "random_id" "sql" {
 }
 
 module "cloudsql" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudsql?ref=v0.1.1"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudsql?ref=v0.1.2"
 
   # The PSA peering must exist before an instance can ask for a private IP.
   depends_on = [module.network]
@@ -78,6 +78,7 @@ module "cloudsql" {
   backup_location        = var.sql_backup_location
   database_name          = "meridian"
   user_name              = "meridian_api"
+  password_rotation      = var.sql_password_rotation
   labels                 = local.labels
 }
 
@@ -91,7 +92,7 @@ resource "random_password" "third_party_placeholder" {
 }
 
 module "secrets" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/secrets?ref=v0.1.1"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/secrets?ref=v0.1.2"
 
   project_id = var.project_id
   location   = var.region
@@ -110,7 +111,7 @@ module "secrets" {
 
 # ---------------------------------------------------------------- compute
 module "api" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudrun-service?ref=v0.1.1"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudrun-service?ref=v0.1.2"
 
   project_id            = var.project_id
   name                  = local.service_name
