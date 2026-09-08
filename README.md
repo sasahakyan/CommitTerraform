@@ -50,7 +50,7 @@ Teardown: `terraform destroy -var-file=tfvars/dev.tfvars`, then `terraform -chdi
 
 ## Time spent
 
-TIME_PLACEHOLDER
+About 2 h 40 min of the 5 h budget, in four blocks: reading the brief and writing the clarification email (roughly 45 min, Sept 5); investigating the account and settling twelve design decisions with the assistant (25 min); building and deploying all three repositories including the bootstrap (about 60 min); documentation, the password incident and its rotation (about 30 min). Not built inside the budget and described instead: the IAP bastion, stg and prd bootstraps, load balancer and Cloud Armor.
 
 ## With more time
 

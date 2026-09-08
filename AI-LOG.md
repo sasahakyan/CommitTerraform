@@ -9,6 +9,8 @@ Working mode: I stated the design decisions up front (three repositories, envs a
 
 ## 2. Rejected or corrected
 
+**Alembic URL through configparser, and a password in the logs.** The generated `alembic/env.py` built the database URL as a string with the URL-encoded password and pushed it into the Alembic config with `set_main_option`. Two problems, one of which only showed in production: configparser treats `%` as interpolation syntax, so a password containing `%7D` crashed the migration job; and the traceback printed the full connection string, database password included, into Cloud Logging, where anyone with `roles/viewer` can read it. Replaced with a SQLAlchemy `URL` object passed directly to `create_engine`, which handles any password and masks it when rendered, added a regression test with awkward characters, and rotated the password through a new `password_rotation` keeper in the module (`v0.1.2`) so rotation is a reviewed tfvars change applied by CI. The old value is invalid; the log line still exists because Cloud Logging does not delete individual entries.
+
 **Runtime identity created inside the Cloud Run module.** The first version of `cloudrun-service` created the runtime service account and the `serviceAccountUser` binding for the deployer itself. That couples compute, IAM and secrets: the secrets module needs the account to grant access, and the module needs the secret IDs, so the graph knots up and the module can't be reused for a second service sharing an identity. I moved the account and the deployer binding to the root stack; the module takes an email.
 
 **`for_each` over a set of IAM members.** Three modules (`state-bucket`, `secrets`, `artifact-registry`) iterated `toset(var.members)`. That validates fine and fails at plan time the moment a member is a service account created in the same apply, which is exactly the bootstrap case. Terraform cannot use unknown values as instance keys. Changed to maps keyed by a static label with the member as the value. Tagged as `v0.1.1`. Not cosmetic: the first bootstrap run died on it.
@@ -18,6 +20,8 @@ Working mode: I stated the design decisions up front (three repositories, envs a
 **Dockerfile.** First draft did `pip wheel ... || true` followed by `pip download`, and repeated the dependency list in two places. A silent `|| true` in a build is how you ship an image that installs different versions from what you tested. Replaced with a single `requirements.txt`, one install step, non-root user.
 
 **yamllint `--strict`.** The reusable lint workflow used `--strict`, which promotes warnings to failures, while the shared config deliberately makes line length a warning because workflow files have long expressions. Every consumer would have failed on day one. Removed it and switched to GitHub annotation output.
+
+**Pull request plans blocked by the dev environment's branch policy.** The GitHub Environment for dev was created main-only, like stg and prd. The first pull request plan was rejected in one second ("Branch refs/pull/1/merge is not allowed to deploy to dev"), because the plan job needs the environment's WIF variables. dev is now unrestricted; stg and prd stay main-only with a required reviewer.
 
 Smaller ones, kept out of the count: a `data "google_project"` that was declared and never used (tflint caught it), a docker login pointed at the full repository path instead of the registry host, and reading Terraform outputs from a remote backend before credentials were exported, which silently wrote empty strings into tfvars.
 

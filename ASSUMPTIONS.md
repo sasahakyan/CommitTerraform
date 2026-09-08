@@ -27,7 +27,8 @@ would change the design, it says what would change.
 
 13. `db` and `secret` in `/health` run on every request: a fresh Postgres connection with `SELECT 1`, and a live `accessSecretVersion` call. Results are not cached and the response carries `Cache-Control: no-store`.
 14. `commit` is the short SHA baked into the image at build time by the reusable build workflow, so it cannot drift from what the pipeline deployed.
-15. The Cloud Billing API had to be enabled on the pre-existing quota project by hand for the bootstrap to check billing permissions. That is the only console/gcloud action outside Terraform, and it touched no Meridian resource.
+15. The dev database password was rotated once during the build after the first migration execution printed it into Cloud Logging. The rotation went through a pull request and a CI apply, which is the mechanism production would use. The leaked value is invalid; the log entry itself cannot be deleted individually and expires with the 30-day default retention.
+16. The Cloud Billing API had to be enabled on the pre-existing quota project by hand for the bootstrap to check billing permissions. That is the only console/gcloud action outside Terraform, and it touched no Meridian resource.
 
 ## Questions I would still ask Meridian
 
