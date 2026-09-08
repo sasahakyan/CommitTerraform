@@ -107,3 +107,9 @@ variable "labels" {
   type    = map(string)
   default = {}
 }
+
+variable "sql_password_rotation" {
+  description = "Change this value to rotate the application database password. Reviewed and applied like any other change."
+  type        = string
+  default     = "initial"
+}

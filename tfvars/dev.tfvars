@@ -14,5 +14,7 @@ sql_point_in_time_recovery = false
 run_min_instances          = 0
 run_max_instances          = 2
 run_deletion_protection    = false
+# Rotated after the first migration run leaked the password into job logs.
+sql_password_rotation = "2026-09-08-r1"
 
 viewer_members = ["group:gcp-devops@comm-it.cloud"]
