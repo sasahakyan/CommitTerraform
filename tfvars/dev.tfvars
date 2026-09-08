@@ -15,4 +15,4 @@ run_min_instances          = 0
 run_max_instances          = 2
 run_deletion_protection    = false
 
-viewer_members = []
+viewer_members = ["group:gcp-devops@comm-it.cloud"]
