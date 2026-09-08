@@ -18,7 +18,7 @@ locals {
 
 # ---------------------------------------------------------------- network
 module "network" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/network?ref=v0.1.2"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/network?ref=v0.1.3"
 
   project_id  = var.project_id
   name        = "${local.prefix}-vpc"
@@ -28,7 +28,7 @@ module "network" {
 
 # ---------------------------------------------------------------- images
 module "artifact_registry" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/artifact-registry?ref=v0.1.2"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/artifact-registry?ref=v0.1.3"
 
   project_id    = var.project_id
   location      = var.region
@@ -60,7 +60,7 @@ resource "random_id" "sql" {
 }
 
 module "cloudsql" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudsql?ref=v0.1.2"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudsql?ref=v0.1.3"
 
   # The PSA peering must exist before an instance can ask for a private IP.
   depends_on = [module.network]
@@ -92,7 +92,7 @@ resource "random_password" "third_party_placeholder" {
 }
 
 module "secrets" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/secrets?ref=v0.1.2"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/secrets?ref=v0.1.3"
 
   project_id = var.project_id
   location   = var.region
@@ -111,7 +111,7 @@ module "secrets" {
 
 # ---------------------------------------------------------------- compute
 module "api" {
-  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudrun-service?ref=v0.1.2"
+  source = "git::https://github.com/sasahakyan/commitTemplates.git//terraform/modules/cloudrun-service?ref=v0.1.3"
 
   project_id            = var.project_id
   name                  = local.service_name
